@@ -1,3 +1,7 @@
+import aiofiles
+import json
+
+
 def get_rank_url(rank):
     RANK_URL_MAP = {
         "Unranked": "https://static.wikia.nocookie.net/leagueoflegends/images/b/b0/League_of_Legends_icon_nav.png/revision/latest?cb=20201105141350",
@@ -12,3 +16,22 @@ def get_rank_url(rank):
         "CHALLENGER": "https://static.wikia.nocookie.net/leagueoflegends/images/0/02/Season_2022_-_Challenger.png/revision/latest?cb=20220105214312",
     }
     return RANK_URL_MAP.get(rank, "https://static.wikia.nocookie.net/leagueoflegends/images/b/b0/League_of_Legends_icon_nav.png/revision/latest?cb=20201105141350")  # Return a default URL if the rank is not found
+
+def get_champion_icon_url(champions, champion_id):
+    champion_name = champions.get(champion_id, "Unknown")
+    return f"https://ddragon.leagueoflegends.com/cdn/14.10.1/img/champion/{champion_name}.png"
+
+
+
+async def get_last_uploaded_index():
+    try:
+        async with aiofiles.open('last_uploaded_icon.json', mode='r') as f:
+            data = await f.read()
+            return json.loads(data).get('last_index', 0)
+    except FileNotFoundError:
+        return 0
+
+async def set_last_uploaded_index(index):
+    async with aiofiles.open('last_uploaded_icon.json', mode='w') as f:
+        data = json.dumps({'last_index': index})
+        await f.write(data)

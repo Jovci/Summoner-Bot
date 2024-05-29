@@ -42,3 +42,25 @@ async def fetch_league_data(encrypted_summoner_id):
                 return await resp.json()
             print(f"Failed to retrieve league data: status={resp.status}")
             return None
+
+async def fetch_livegame(puuid):
+    url = f"https://na1.api.riotgames.com/lol/spectator/v5/active-games/by-summoner/{puuid}?api_key={API_KEY}"
+    print(f"Sending request to: {url}")
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            if resp.status == 200:
+                return await resp.json()
+            print(f"Failed to retrieve league data: status={resp.status}")
+            return None
+
+async def fetch_champion_data():
+    url = "https://ddragon.leagueoflegends.com/cdn/14.10.1/data/en_US/champion.json"
+    print(f"Sending request to: {url}")
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as resp:
+            if resp.status == 200:
+                data = await resp.json()
+                champions = {int(champion['key']): champion['id'] for champion in data['data'].values()}
+                return champions
+            print(f"Failed to retrieve champion data: status={resp.status}")
+            return None
