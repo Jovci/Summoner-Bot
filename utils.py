@@ -1,7 +1,6 @@
 import aiofiles
 import json
 
-
 def get_rank_url(rank):
     RANK_URL_MAP = {
         "Unranked": "https://static.wikia.nocookie.net/leagueoflegends/images/b/b0/League_of_Legends_icon_nav.png/revision/latest?cb=20201105141350",
@@ -20,8 +19,6 @@ def get_rank_url(rank):
 def get_champion_icon_url(champions, champion_id):
     champion_name = champions.get(champion_id, "Unknown")
     return f"https://ddragon.leagueoflegends.com/cdn/14.10.1/img/champion/{champion_name}.png"
-
-
 
 async def get_last_uploaded_index():
     try:
