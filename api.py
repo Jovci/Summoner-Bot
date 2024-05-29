@@ -55,7 +55,7 @@ async def fetch_livegame(puuid):
 
 async def fetch_champion_data():
     url = "https://ddragon.leagueoflegends.com/cdn/14.10.1/data/en_US/champion.json"
-    print(f"Sending request to: {url}")
+    print(f"Sending request to: {url} \n")
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             if resp.status == 200:

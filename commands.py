@@ -28,7 +28,7 @@ def setup_commands(bot):
             await ctx.followup.send("Failed to retrieve PUUID for the given summoner.")
             return
         
-        print(f"PUUID found: {puuid}")
+        print(f"PUUID found: {puuid} \n")
         
         print(f"Fetching summoner data for PUUID: {puuid}")
         summoner_data = await fetch_summoner_data(puuid)
@@ -38,7 +38,7 @@ def setup_commands(bot):
             profile_icon_id = summoner_data["profileIconId"]
             encrypted_summoner_id = summoner_data["id"]
 
-            print(f"Found summoner data: summonerLevel={summoner_level}, profileIconId={profile_icon_id}, encryptedSummonerId={encrypted_summoner_id}")
+            print(f"Found summoner data: summonerLevel={summoner_level}, profileIconId={profile_icon_id}, encryptedSummonerId={encrypted_summoner_id} \n")
 
             print(f"Fetching league data for encryptedSummonerId: {encrypted_summoner_id}")
             league_data = await fetch_league_data(encrypted_summoner_id)
@@ -111,17 +111,32 @@ def setup_commands(bot):
         blue_team = [
             {
                 "name": participant['riotId'],
-                "championId": participant['championId']
+                "championId": participant['championId'],
+                "summonerId": participant['summonerId']
             }
             for participant in livegame['participants'] if participant['teamId'] == 100
         ]
         red_team = [
             {
                 "name": participant['riotId'],
-                "championId": participant['championId']
+                "championId": participant['championId'],
+                "summonerId": participant['summonerId']
             }
             for participant in livegame['participants'] if participant['teamId'] == 200
         ]
+
+        async def fetch_rank(summoner_id):
+            league_data = await fetch_league_data(summoner_id)
+            for entry in league_data:
+                if entry["queueType"] == "RANKED_SOLO_5x5":
+                    return f"{entry['tier']} {entry['rank']}"
+            return "Unranked"
+
+        # Fetch ranks for all players
+        for player in blue_team:
+            player['rank'] = await fetch_rank(player['summonerId'])
+        for player in red_team:
+            player['rank'] = await fetch_rank(player['summonerId'])
 
         # Prepare embed message
         embed = discord.Embed(
@@ -136,17 +151,23 @@ def setup_commands(bot):
                 return f"<:{champion_name.lower()}:{emoji_info['id']}>"
             return ""
 
-        blue_team_str = "\n".join(
+        blue_team_names = "\n".join(
             f"{get_emoji(champions[player['championId']])} **{player['name']}**" if player['name'] == requested_summoner else f"{get_emoji(champions[player['championId']])} {player['name']}"
             for player in blue_team
         )
-        red_team_str = "\n".join(
+        red_team_names = "\n".join(
             f"{get_emoji(champions[player['championId']])} **{player['name']}**" if player['name'] == requested_summoner else f"{get_emoji(champions[player['championId']])} {player['name']}"
             for player in red_team
         )
 
-        embed.add_field(name="Blue Team", value=blue_team_str, inline=True)
-        embed.add_field(name="Red Team", value=red_team_str, inline=True)
+        blue_team_ranks = "\n".join(player['rank'] for player in blue_team)
+        red_team_ranks = "\n".join(player['rank'] for player in red_team)
+
+        embed.add_field(name="Blue Team", value=blue_team_names, inline=True)
+        embed.add_field(name="Ranks", value=blue_team_ranks, inline=True)
+        embed.add_field(name="\u200b", value="\u200b", inline=False)  # Empty field for spacing
+        embed.add_field(name="Red Team", value=red_team_names, inline=True)
+        embed.add_field(name="Ranks", value=red_team_ranks, inline=True)
 
         embed.set_footer(text=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar.url)
         
