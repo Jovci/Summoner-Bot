@@ -69,7 +69,7 @@ def setup_commands(bot):
                 timestamp=datetime.now()
             )
             embed.set_thumbnail(url=thumbnail_url)
-            embed.set_image(url=f"https://ddragon.leagueoflegends.com/cdn/14.1.1/img/profileicon/{profile_icon_id}.png")
+            embed.set_image(url=f"https://ddragon.leagueoflegends.com/cdn/14.11.1/img/profileicon/{profile_icon_id}.png")
             embed.set_footer(text=f"Requested by {ctx.author.name}", icon_url=ctx.author.avatar.url)
             embed.add_field(name="Name", value=name, inline=False)
             embed.add_field(name="Queue Type", value=queue_type, inline=True)
