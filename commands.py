@@ -4,9 +4,7 @@ from datetime import datetime
 from api import fetch_summoner_data, fetch_league_data, fetch_puuid, fetch_livegame, fetch_champion_data
 from utils import get_rank_url, get_champion_icon_url, get_last_uploaded_index, set_last_uploaded_index
 import json
-import aiohttp
 
-# Load environment variables
 load_dotenv()
 with open('emojis.json', 'r') as f:
     emoji_mappings = json.load(f)
@@ -18,7 +16,7 @@ def setup_commands(bot):
             await ctx.respond("Please provide a valid summoner name and tagline in the format 'name#tagline'.")
             return
         
-        await ctx.defer()  # Acknowledge the command right away
+        await ctx.defer()  
         
         game_name, tagline = name.split('#')
         print(f"Fetching PUUID for: {game_name}#{tagline}")
@@ -87,7 +85,7 @@ def setup_commands(bot):
             await ctx.respond("Please provide a valid summoner name and tagline in the format 'name#tagline'.")
             return
         
-        await ctx.defer()  # Acknowledge the command right away
+        await ctx.defer()  
         
         game_name, tagline = name.split('#')
         requested_summoner = f"{game_name}#{tagline}"
@@ -105,7 +103,6 @@ def setup_commands(bot):
             await ctx.followup.send("Failed to retrieve live game data for the given summoner.")
             return
         
-        # Fetch champion data
         champions = await fetch_champion_data()
 
         blue_team = [
@@ -132,13 +129,11 @@ def setup_commands(bot):
                     return f"{entry['tier']} {entry['rank']}"
             return "Unranked"
 
-        # Fetch ranks for all players
         for player in blue_team:
             player['rank'] = await fetch_rank(player['summonerId'])
         for player in red_team:
             player['rank'] = await fetch_rank(player['summonerId'])
 
-        # Prepare embed message
         embed = discord.Embed(
             title=f"LIVE GAME - {requested_summoner}",
             colour=0x00ff11,

@@ -1,10 +1,8 @@
 import discord
 import json
 import aiohttp
-import asyncio
 from discord.ext import commands
 
-# Define the guild IDs
 guild_ids = [
     "1245151855810445383",
     "1245151996236005426",
@@ -12,14 +10,11 @@ guild_ids = [
     "1245157226386296883"
 ]
 
-# Load the bot token from environment variables
 bot_token = "BOT_KEY"
 
-# Define the bot
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix="!", intents=intents)
 
-# Function to fetch champion data
 async def fetch_champion_data():
     url = "https://ddragon.leagueoflegends.com/cdn/14.10.1/data/en_US/champion.json"
     async with aiohttp.ClientSession() as session:
